@@ -12,8 +12,8 @@ import java.awt.image.DataBufferByte;
 // MNist reader stuff
 FileInputStream inImage = null;
 FileInputStream inLabel = null;
-String inputImagePath = "C:\\Users\\zenit\\Desktop\\Processing\\dumbshit\\train-images-idx3-ubyte.idx3-ubyte";
-String inputLabelPath = "C:\\Users\\zenit\\Desktop\\Processing\\dumbshit\\train-labels.idx1-ubyte";
+String inputImagePath = "C:\\Users\\zenit\\Desktop\\Processing\\randomaithing\\dumbshit\\train-images-idx3-ubyte.idx3-ubyte";
+String inputLabelPath = "C:\\Users\\zenit\\Desktop\\Processing\\randomaithing\\dumbshit\\train-labels.idx1-ubyte";
 int magicNumberImages;
 int numberOfImages;
 int numberOfRows;
@@ -38,9 +38,9 @@ int gridX = 28, gridY = 28; // DO NOT CHANGE, FOR DATASET
 
 int start = 784, end = 10; // start and end no. of neurons (also DO NOT CHANGE)
 
-int layers[] = {32, 32};
+int layers[] = {16, 16};
 
-float modelLearningRate = 0.1; // learning rate of model
+float modelLearningRate = 0.001; // learning rate of model
 int penSize = 2; // radius of pen
 boolean showGraph = false;
 
@@ -67,11 +67,14 @@ float average(FloatList arr) {
 
 float sigmoid(float x) {
   return 1 / (1 + exp(-x)); //sigmoid
-  // return max(0, x);
+}
+
+float relu(float x) {
+  return max(0, x); // relu
 }
 
 float reluDiff(float x) {
-  if (x < 0) { // relu
+  if (x < 0) { // reludiff
     return 0;
   } else {
     return 1;
@@ -138,7 +141,7 @@ void drawArrow(PVector v0, PVector v1, float thickness, float arrowLength, float
 }
 
 void setup() {
-  // frameRate(1); // slooooww mooooddeeee
+  
   rectMode(CENTER);
   textAlign(CENTER, CENTER);
   size(800, 600);
@@ -193,6 +196,7 @@ void setup() {
       e.printStackTrace();
     }
   }
+  // frameRate(1); // slooooww mooooddeeee
 }
 void draw() {
   background(0);
@@ -242,16 +246,32 @@ void draw() {
     //  print(ans[i], ' ');
     //}
     //print('\n');
-
+    
     int result = getResult(model.predictNum(gridVals));
     float cost = model.getCost(gridVals, ansArr);
-
+    
     // print(cost, '\n');
     sumCost.append(cost);
-
+    
+    //for (int i = 0; i < gridVals.length; i++) {
+    //  print(gridVals[i], ' ');
+    //}
+    
     // graph.graphData.append(cost);
-
+    println("Before backprop:");
+    println("Activations:");
+    model.printActivations();
+    //print('\n');
+    //println("Weights:");
+    //model.printWeights();
     model.learn(gridVals, ansArr);
+    //print('\n');
+    //println("After backprop:");
+    //println("Activations:");
+    //model.printActivations();
+    //print('\n');
+    //println("Weights:");
+    //model.printWeights();
 
     if (label == result) {
         correct++;
@@ -310,19 +330,13 @@ void draw() {
     if (epochIterator != 0 && epochIterator % ((numberOfImages - 1) / 100) == 0) {
       model.updateAllWeights();
       print("updated weights", '\n');
-      float averageCost = average(sumCost);
-      graph.graphData.append(averageCost);
-      sumCost.clear();
     }
     if (epochIterator != 0 && epochIterator % ((numberOfImages - 1)) == 0) {
       epochIterator = 0;
       epoch++;
-
       float averageCost = average(sumCost);
-      //  print(averageCost, '\n');
-
-      sumCost.clear();
       graph.graphData.append(averageCost);
+      sumCost.clear();
     }
   } else {
     if (epoch == maxEpoch) {
@@ -587,9 +601,10 @@ class Neuron {
     weightNum = weightAmt;
     weights = new float[weightAmt];
     for (int i = 0; i < weightAmt; i++) {
-      weights[i] = randomGaussian(); // initialise random weights
+      weights[i] = random(-1/sqrt(weightNum) , 1/sqrt(weightNum) ); // initialise random weights
+      // print(weights[i], " ");
     }
-    bias = randomGaussian();
+    bias = 0;
 
     prevActivations = new float[weightNum];
     learnVals = new FloatList[weightNum + 1];
@@ -610,12 +625,15 @@ class Neuron {
     sum += bias;
     prevSum = sum;
 
-    val = sigmoid(sum); // sigmoid
-
+    // val = sigmoid(sum); // sigmoid
+    val = relu(sum); // relu
+     
+    // print(val, " ");
+    
     return val;
   }
   
-  float setActivationNoSigmoid(float[] actArr) {
+  float setActivationNoActivation(float[] actArr) {
     if (actArr.length != weights.length) {
       println("incorrect array length");
     }
@@ -627,23 +645,26 @@ class Neuron {
     sum += bias;
     prevSum = sum;
 
-    val = sum; // sigmoid
+    val = sum;
 
     return val;
   }
-
+  
+  
+  
   void addLearnVal(float inputVal) { // inputVal is specifically dC/da
-
+    
     // get learnVals for each weight
     for (int i = 0; i < weights.length; i++) {
-      float learnVal = prevActivations[i] * sigmoid(prevSum) * (1 - sigmoid(prevSum)) * inputVal; // for sigmoid
-      // float learnVal = prevActivations[i] * reluDiff(prevSum) * inputVal;
+      // float learnVal = prevActivations[i] * sigmoid(prevSum) * (1 - sigmoid(prevSum)) * inputVal; // for sigmoid
+      float learnVal = prevActivations[i] * reluDiff(prevSum) * inputVal; // relu
       learnVals[i].append(learnVal);
+      // print(learnVal, " ");
     }
 
     // get bias learn val
-    float biasLearnVal = sigmoid(prevSum) * (1 - sigmoid(prevSum)) * inputVal;
-    // float biasLearnVal = reluDiff(prevSum) * inputVal;
+    // float biasLearnVal = sigmoid(prevSum) * (1 - sigmoid(prevSum)) * inputVal;
+    float biasLearnVal = reluDiff(prevSum) * inputVal; // relu
     learnVals[weights.length].append(biasLearnVal);
 
     biasLearn = biasLearnVal;
@@ -653,7 +674,8 @@ class Neuron {
     for (int i = 0; i < weights.length; i++) {
       float average = average(learnVals[i]);
       learnVals[i].clear();
-      weights[i] -= average * learningRate;
+      weights[i] = weights[i] - (average * learningRate);
+      
     }
 
     float biasAverage = average(learnVals[weights.length]);
@@ -706,7 +728,7 @@ class Model {
         if (i == 0) {
           neurons[i][j].setActivation(input);
         } else if (i == neurons.length - 1) {
-          neurons[i][j].setActivationNoSigmoid(prevAct);
+          neurons[i][j].setActivationNoActivation(prevAct);
         } else {
           neurons[i][j].setActivation(prevAct);
         }
@@ -737,7 +759,23 @@ class Model {
     }
     return sum;
   }
-
+  
+  void printActivations() {
+    for (int i = 0; i < neurons.length; i++) {
+      for (int j = 0; j < neurons[i].length; j++) {
+        print(neurons[i][j].val, ' ');
+      }
+    }
+  }
+  
+  void printWeights() {
+    for (int i = 0; i < neurons.length; i++) {
+      for (int j = 0; j < neurons[i].length; j++) {
+          print(neurons[i][j].weights[0], ' ');
+      }
+    }
+  }
+  
   void learn(float[] input, float[] ans) { // back propagation
     float[] prediction = predictNum(input);
     for (int i = neurons.length - 1; i >= 0; i--) {
@@ -751,7 +789,7 @@ class Model {
               sum += difference * prediction[k] * (1 - prediction[k]);
             } else {
               sum += difference * -prediction[k] * prediction[j];
-            }   
+            }
           }
           neurons[i][j].addLearnVal(sum);
         } else {
@@ -763,11 +801,11 @@ class Model {
         }
       }
     }
-    for (int i = 0; i < prediction.length; i++) {
-      print(prediction[i]);
-      print(" ");
-    }
-    print("\n");
+    //for (int i = 0; i < prediction.length; i++) {
+    //  print(prediction[i]);
+    //  print(" ");
+    //}
+    //print("\n");
   }
 
   void updateAllWeights() {
