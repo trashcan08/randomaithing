@@ -71,12 +71,18 @@ class Neuron {
   
   
   
-  void addLearnVal(float inputVal) { // inputVal is specifically dC/da
+  void addLearnVal(float inputVal, boolean relu) { 
+    // inputVal is specifically dC/da
+    // relu is whether the activation function (sigmoid or relu) should be applied
     
     // get learnVals for each weight
     for (int i = 0; i < weights.length; i++) {
-      // float learnVal = prevActivations[i] * sigmoid(prevSum) * (1 - sigmoid(prevSum)) * inputVal; // for sigmoid
-      float learnVal = prevActivations[i] * reluDiff(prevSum) * inputVal; // relu
+      float learnVal = prevActivations[i] * inputVal; 
+      if (relu) {
+        learnVal *= reluDiff(prevSum); // relu
+        // learnVal *= sigmoid(prevSum) * (1 - sigmoid(prevSum)); // sigmoid
+      }
+      
       learnVals[i].append(learnVal);
       // print(learnVal, " ");
     }
@@ -208,13 +214,13 @@ class Model {
             } else {
               learnVal = mult * -prediction[k] * prediction[j];
             }
-          neurons[i][j].addLearnVal(learnVal);
+          neurons[i][j].addLearnVal(learnVal, false);
         } else {
           float sumLearnVals = 0.0;
           for (int k = 0; k < neurons[i+1].length; k++) {
             sumLearnVals += neurons[i+1][k].biasLearn * neurons[i+1][k].weights[j];
           }
-          neurons[i][j].addLearnVal(sumLearnVals);
+          neurons[i][j].addLearnVal(sumLearnVals, true);
         }
       }
     }

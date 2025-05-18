@@ -199,6 +199,11 @@ class ResultDisplay {
     float cornerX = x - Width/2;
     float cornerY = y + Height/2;
     float rectWidth = Width / results.length;
+    push();
+    stroke(255);
+    strokeWeight(3);
+    line(cornerX - 5, cornerY, cornerX - 5, cornerY - Height);
+    pop();   
     for (int i = 0; i < results.length; i++) {
       push();
       noStroke();

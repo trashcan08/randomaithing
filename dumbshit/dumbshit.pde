@@ -248,12 +248,16 @@ void draw() {
       text(correct, 9 * width/10, 3 * height/10);
       pop();
       
-      
+      // display percent correct
       float percentRight = (float(correct) / float(correct + wrong));
       push();
       fill(255 * (1 - percentRight), 255 * percentRight , 0);
       textSize(50);
-      text(str(percentRight * 100).substring(0,3), 8 * width/10, 3 * height/10);
+      if (percentRight * 100 < 10) {
+        text(str(percentRight * 100).substring(0,3) + '%', 8 * width/10, 1 * height/10);
+      } else {
+        text(str(percentRight * 100).substring(0,4) + '%', 8 * width/10, 1 * height/10);
+      }
       pop();
       
     }
@@ -297,7 +301,19 @@ void draw() {
       textSize(40);
       text(correct, 9 * width/10, 3 * height/10);
       pop();
-
+      
+      // display percent correct
+      float percentRight = (float(correct) / float(correct + wrong));
+      push();
+      fill(255 * (1 - percentRight), 255 * percentRight , 0);
+      textSize(50);
+      if (percentRight * 100 < 10) {
+        text(str(percentRight * 100).substring(0,3) + '%', 8 * width/10, 1 * height/10);
+      } else {
+        text(str(percentRight * 100).substring(0,4) + '%', 8 * width/10, 1 * height/10);
+      }
+      pop();
+      
       float[] gridVals = new float[784];
       int num = 0;
       for (int i = 0; i < gridX; i++) {
@@ -313,6 +329,10 @@ void draw() {
       textSize(40);
       text(result, 4 * width/5, height/2);
       pop();
+      
+      // display as bar chart
+      resultDisplay.results = model.predictNum(gridVals);
+      resultDisplay.display();
     }
   }
 }
