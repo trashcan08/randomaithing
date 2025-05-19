@@ -41,7 +41,7 @@ int start = 784, end = 10; // start and end no. of neurons (also DO NOT CHANGE)
 
 int layers[] = {32, 32};
 
-float modelLearningRate = 0.001; // learning rate of model
+float modelLearningRate = 0.01; // learning rate of model
 int penSize = 2; // radius of pen
 boolean showGraph = false;
 
@@ -52,7 +52,7 @@ Graph graph;
 ResultDisplay resultDisplay;
 
 void setup() {
-  
+
   rectMode(CENTER);
   textAlign(CENTER, CENTER);
   size(800, 600);
@@ -61,13 +61,13 @@ void setup() {
   bar = new Bar(width/2, 9*height/10, 4*width/5, height/20);
   graph = new Graph(width/2, height/2, 500, 500);
   resultDisplay = new ResultDisplay(4 * width/5, 2.7 * height/4, width / 5, height / 5);
-  
+
   //for (int i = 0; i < model.neurons.length; i++) {
   //  print(model.neurons[i].length , ' ');
-    
+
   //}
   //print('\n');
-  
+
   //for (int i = 0; i < 10; i++) {
   //  graph.graphData.push(random(10));
   //}
@@ -157,14 +157,14 @@ void draw() {
         num++;
       }
     }
-
+    model.learn(gridVals,ansArr);
     // predict val
     float[] ans = model.predictNum(gridVals);
     //for (int i = 0; i < ans.length; i++) {
     //  print(ans[i], ' ');
     //}
     //print('\n');
-    
+
     int result = getResult(model.predictNum(gridVals));
     float cost = model.getCost(gridVals, ansArr);
     
@@ -174,7 +174,7 @@ void draw() {
     //for (int i = 0; i < gridVals.length; i++) {
     //  print(gridVals[i], ' ');
     //}
-    
+
     // graph.graphData.append(cost);
     //println("Before backprop:");
     //println("Activations:");
@@ -182,7 +182,7 @@ void draw() {
     //print('\n');
     //println("Weights:");
     //model.printWeights();
-    model.learn(gridVals, ansArr);
+    
     //print('\n');
     //println("After backprop:");
     //println("Activations:");
@@ -192,13 +192,13 @@ void draw() {
     //model.printWeights();
 
     if (label == result) {
-        correct++;
-      } else {
-        wrong++;
-      }
+      correct++;
+    } else {
+      wrong++;
+    }
 
     if (showGraph) {
-      
+
       graph.display();
     } else {
       // display image
@@ -226,11 +226,11 @@ void draw() {
       textSize(30);
       text(result, 4 * width/5, height/2 - 50);
       pop();
-      
+
       // display as bar chart
       resultDisplay.results = ans;
       resultDisplay.display();
-      
+
       // show wrong and correct
       push();
       fill(255, 0, 0);
@@ -247,22 +247,21 @@ void draw() {
       textSize(40);
       text(correct, 9 * width/10, 3 * height/10);
       pop();
-      
+
       // display percent correct
       float percentRight = (float(correct) / float(correct + wrong));
       push();
-      fill(255 * (1 - percentRight), 255 * percentRight , 0);
+      fill(255 * (1 - percentRight), 255 * percentRight, 0);
       textSize(50);
       if (percentRight * 100 < 10) {
-        text(str(percentRight * 100).substring(0,3) + '%', 8 * width/10, 1 * height/10);
+        text(str(percentRight * 100).substring(0, 3) + '%', 8 * width/10, 1 * height/10);
       } else {
-        text(str(percentRight * 100).substring(0,4) + '%', 8 * width/10, 1 * height/10);
+        text(str(percentRight * 100).substring(0, 4) + '%', 8 * width/10, 1 * height/10);
       }
       pop();
-      
     }
     epochIterator++;
-    if (epochIterator != 0 && epochIterator % ((numberOfImages - 1) / 100) == 0) {
+    if (epochIterator != 0 && epochIterator % ((numberOfImages - 1) / 1000) == 0) {
       model.updateAllWeights();
       print("updated weights", '\n');
     }
@@ -301,19 +300,19 @@ void draw() {
       textSize(40);
       text(correct, 9 * width/10, 3 * height/10);
       pop();
-      
+
       // display percent correct
       float percentRight = (float(correct) / float(correct + wrong));
       push();
-      fill(255 * (1 - percentRight), 255 * percentRight , 0);
+      fill(255 * (1 - percentRight), 255 * percentRight, 0);
       textSize(50);
       if (percentRight * 100 < 10) {
-        text(str(percentRight * 100).substring(0,3) + '%', 8 * width/10, 1 * height/10);
+        text(str(percentRight * 100).substring(0, 3) + '%', 8 * width/10, 1 * height/10);
       } else {
-        text(str(percentRight * 100).substring(0,4) + '%', 8 * width/10, 1 * height/10);
+        text(str(percentRight * 100).substring(0, 4) + '%', 8 * width/10, 1 * height/10);
       }
       pop();
-      
+
       float[] gridVals = new float[784];
       int num = 0;
       for (int i = 0; i < gridX; i++) {
@@ -329,7 +328,7 @@ void draw() {
       textSize(40);
       text(result, 4 * width/5, height/2);
       pop();
-      
+
       // display as bar chart
       resultDisplay.results = model.predictNum(gridVals);
       resultDisplay.display();

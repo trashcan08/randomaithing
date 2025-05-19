@@ -23,7 +23,7 @@ class Neuron {
       weights[i] = random(-1/sqrt(weightNum) , 1/sqrt(weightNum) ); // initialise random weights
       // print(weights[i], " ");
     }
-    bias = random(-1/sqrt(weightNum) , 1/sqrt(weightNum) );
+    bias = random(-sqrt(1/weightNum) , sqrt(1/weightNum));
 
     prevActivations = new float[weightNum];
     learnVals = new FloatList[weightNum + 1];
@@ -32,7 +32,7 @@ class Neuron {
     }
   }
 
-  float setActivation(float[] actArr) {
+  float setActivation(float[] actArr, boolean relu) {
     if (actArr.length != weights.length) {
       println("incorrect array length");
     }
@@ -43,29 +43,16 @@ class Neuron {
     }
     sum += bias;
     prevSum = sum;
-
+    
     // val = sigmoid(sum); // sigmoid
-    val = relu(sum); // relu
+    if (relu) {
+      val = relu(sum);
+    } else {
+      val = sum;
+    }
      
     // print(val, " ");
     
-    return val;
-  }
-  
-  float setActivationNoActivation(float[] actArr) {
-    if (actArr.length != weights.length) {
-      println("incorrect array length");
-    }
-    float sum = 0;
-    for (int i = 0; i < weights.length; i++) {
-      sum += actArr[i] * weights[i] ;
-      prevActivations[i] = actArr[i];
-    }
-    sum += bias;
-    prevSum = sum;
-
-    val = sum;
-
     return val;
   }
   
@@ -89,7 +76,10 @@ class Neuron {
 
     // get bias learn val
     // float biasLearnVal = sigmoid(prevSum) * (1 - sigmoid(prevSum)) * inputVal;
-    float biasLearnVal = reluDiff(prevSum) * inputVal; // relu
+    float biasLearnVal = inputVal; // relu
+    if (relu) {
+      biasLearnVal *= reluDiff(prevSum);
+    }
     learnVals[weights.length].append(biasLearnVal);
 
     biasLearn = biasLearnVal;
@@ -151,11 +141,11 @@ class Model {
       }
       for (int j = 0; j < neurons[i].length; j++) {
         if (i == 0) {
-          neurons[i][j].setActivation(input);
+          neurons[i][j].setActivation(input, true);
         } else if (i == neurons.length - 1) {
-          neurons[i][j].setActivationNoActivation(prevAct);
+          neurons[i][j].setActivation(prevAct, false);
         } else {
-          neurons[i][j].setActivation(prevAct);
+          neurons[i][j].setActivation(prevAct, true);
         }
       }
     }
