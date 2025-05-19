@@ -35,8 +35,8 @@ class Neuron {
   float setActivation(float[] actArr, boolean relu) {
     if (actArr.length != weights.length) {
       println("incorrect array length");
-    }
-    float sum = 0;
+    }  
+    float sum = 0.0;
     for (int i = 0; i < weights.length; i++) {
       sum += actArr[i] * weights[i] ;
       prevActivations[i] = actArr[i];

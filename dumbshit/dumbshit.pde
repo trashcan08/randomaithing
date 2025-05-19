@@ -25,7 +25,7 @@ int numberOfLabels;
 int iterator = 0; // iterator for images
 int epochIterator = 0; // iterator per epoch
 int epoch = 0; // no. of epochs
-int maxEpoch = 10; // max no. of epochs
+int maxEpoch = 5; // max no. of epochs
 int numberOfImgs = 10000;
 float storedImgs[][][] = new float[numberOfImgs][28][28];
 int storedLabels[] = new int[numberOfImgs];
