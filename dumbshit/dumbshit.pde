@@ -12,8 +12,8 @@ import java.awt.image.DataBufferByte;
 // MNist reader stuff
 FileInputStream inImage = null;
 FileInputStream inLabel = null;
-String inputImagePath = "C:\\Users\\zenit\\Desktop\\Processing\\randomaithing\\dumbshit\\train-images-idx3-ubyte.idx3-ubyte";
-String inputLabelPath = "C:\\Users\\zenit\\Desktop\\Processing\\randomaithing\\dumbshit\\train-labels.idx1-ubyte";
+String inputImagePath = "/training_data/train-images-idx3-ubyte.idx3-ubyte";
+String inputLabelPath = "/training_data/train-labels.idx1-ubyte";
 int magicNumberImages;
 int numberOfImages;
 int numberOfRows;
@@ -22,11 +22,11 @@ int numberOfColumns;
 int magicNumberLabels;
 int numberOfLabels;
 
-int iterator = 0; // iterator for images
+int iterator = 0; // iterator for images (not used lol)
 int epochIterator = 0; // iterator per epoch
 int epoch = 0; // no. of epochs
 int maxEpoch = 5; // max no. of epochs
-int numberOfImgs = 10000;
+int numberOfImgs = 10000; // number of images per epoch
 float storedImgs[][][] = new float[numberOfImgs][28][28];
 int storedLabels[] = new int[numberOfImgs];
 
@@ -76,8 +76,8 @@ void setup() {
   // TODO Auto-generated method stub
 
   try {
-    inImage = new FileInputStream(inputImagePath);
-    inLabel = new FileInputStream(inputLabelPath);
+    inImage = new FileInputStream(sketchPath() + inputImagePath);
+    inLabel = new FileInputStream(sketchPath() + inputLabelPath);
 
     magicNumberImages = (inImage.read() << 24) | (inImage.read() << 16) | (inImage.read() << 8) | (inImage.read());
     numberOfImages = (inImage.read() << 24) | (inImage.read() << 16) | (inImage.read() << 8) | (inImage.read());
