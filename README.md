@@ -19,4 +19,4 @@ The project consists of:
 - It uses Softmax for the last layer.
 
 ## How to run
-Just get processing and run it lol, don't forget to set the filePath to your own filePath to the project. If you still cannot open it, I'm working on a OpenProcessing project which you get (hopefully) run on the web.
+Just get processing and run it lol. If you still cannot open it, I'm working on a OpenProcessing project which you get (hopefully) run on the web.
